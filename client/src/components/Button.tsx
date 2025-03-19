@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     fontWeight: 'semibold',
     fontSize: 15,
-    maxWidth: 331,
+    width: 331,
   },
   text: {
     textAlign: 'center',

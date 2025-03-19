@@ -1,22 +1,28 @@
 import React from 'react';
-import {SafeAreaView, StyleSheet} from 'react-native';
-import Button from './src/components/Button';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import Login from './src/screens/Login';
+import {NavigationContainer} from '@react-navigation/native';
 
-function App(): React.JSX.Element {
+const Stack = createNativeStackNavigator();
+
+function RootStack() {
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <Button onPress={() => console.log('Button pressed')}>Press me</Button>
-      <Button type="secondary" onPress={() => console.log('Button pressed')}>
-        Press me
-      </Button>
-    </SafeAreaView>
+    <Stack.Navigator initialRouteName="Login">
+      <Stack.Screen
+        name="Login"
+        component={Login}
+        options={{headerShown: false}}
+      />
+    </Stack.Navigator>
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-});
+function App(): React.JSX.Element {
+  return (
+    <NavigationContainer>
+      <RootStack />
+    </NavigationContainer>
+  );
+}
 
 export default App;
