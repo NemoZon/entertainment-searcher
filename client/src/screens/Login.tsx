@@ -3,8 +3,11 @@ import React from 'react';
 import BaseScreen from './BaseScreen';
 import colors from '../tools/colors';
 import Button from '../components/Button';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
-const Login = () => {
+const Login: React.ComponentType<NativeStackScreenProps<any, any>> = ({
+  navigation,
+}) => {
   return (
     <BaseScreen>
       <View style={styles.content}>
@@ -14,7 +17,11 @@ const Login = () => {
         />
         <Text style={styles.text}>Planifiez moins, vivez plus</Text>
         <View style={styles.buttons}>
-          <Button onPress={() => {}} type="primary">
+          <Button
+            onPress={() => {
+              navigation.navigate('SignIn');
+            }}
+            type="primary">
             Connexion
           </Button>
           <Button onPress={() => {}} type="secondary">

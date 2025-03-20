@@ -1,4 +1,4 @@
-import {SafeAreaView, StyleSheet} from 'react-native';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
 import React from 'react';
 import colors from '../tools/colors';
 
@@ -9,11 +9,14 @@ type BaseScreenProps = {
 
 const BaseScreen = ({children, containerize = true}: BaseScreenProps) => {
   const container = {
+    flex: 1,
     paddingHorizontal: containerize ? 20 : 0,
     paddingVertical: containerize ? 10 : 0,
   };
   return (
-    <SafeAreaView style={[styles.page, container]}>{children}</SafeAreaView>
+    <SafeAreaView style={styles.page}>
+      <View style={container}>{children}</View>
+    </SafeAreaView>
   );
 };
 
