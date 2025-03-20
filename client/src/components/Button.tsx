@@ -6,9 +6,15 @@ type ButtonProps = {
   onPress: () => void;
   children: string;
   type?: 'primary' | 'secondary';
+  style?: object;
 };
 
-const Button = ({onPress, children, type = 'primary'}: ButtonProps) => {
+const Button = ({
+  onPress,
+  children,
+  type = 'primary',
+  style = {},
+}: ButtonProps) => {
   const dynamicStyles = {
     button: {
       backgroundColor: type === 'primary' ? colors.SECONDARY : colors.MAIN,
@@ -22,7 +28,7 @@ const Button = ({onPress, children, type = 'primary'}: ButtonProps) => {
   return (
     <TouchableOpacity
       onPress={onPress}
-      style={[styles.button, dynamicStyles.button]}>
+      style={[styles.button, dynamicStyles.button, style]}>
       <Text style={[styles.text, dynamicStyles.text]}>{children}</Text>
     </TouchableOpacity>
   );
