@@ -17,14 +17,12 @@ const Login: React.ComponentType<NativeStackScreenProps<any, any>> = ({
         />
         <Text style={styles.text}>Planifiez moins, vivez plus</Text>
         <View style={styles.buttons}>
-          <Button
-            onPress={() => {
-              navigation.navigate('SignIn');
-            }}
-            type="primary">
+          <Button onPress={() => navigation.navigate('SignIn')} type="primary">
             Connexion
           </Button>
-          <Button onPress={() => {}} type="secondary">
+          <Button
+            onPress={() => navigation.navigate('SignUp')}
+            type="secondary">
             S’inscrire
           </Button>
         </View>
@@ -48,6 +46,7 @@ const styles = StyleSheet.create({
   },
   buttons: {
     gap: 15,
+    width: '100%',
   },
 });
 

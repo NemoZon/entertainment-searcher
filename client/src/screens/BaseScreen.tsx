@@ -10,7 +10,7 @@ type BaseScreenProps = {
 const BaseScreen = ({children, containerize = true}: BaseScreenProps) => {
   const container = {
     flex: 1,
-    paddingHorizontal: containerize ? 20 : 0,
+    paddingHorizontal: containerize ? 22 : 0,
     paddingVertical: containerize ? 10 : 0,
   };
   return (
