@@ -1,4 +1,4 @@
-import {Text, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useState} from 'react';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
@@ -26,10 +26,18 @@ const DateInput = ({placeholder, dateState}: DateInputProps) => {
     hidePicker();
   };
 
+  const dynamicStyles = StyleSheet.create({
+    text: {
+      color: date ? 'black' : '#8391A1',
+    },
+  });
+
   return (
     <View>
-      <TouchableOpacity onPress={showDatePicker}>
-        <Text>{date?.toISOString() || placeholder}</Text>
+      <TouchableOpacity style={styles.input} onPress={showDatePicker}>
+        <Text style={dynamicStyles.text}>
+          {date?.toISOString() || placeholder}
+        </Text>
       </TouchableOpacity>
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
@@ -40,5 +48,15 @@ const DateInput = ({placeholder, dateState}: DateInputProps) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  input: {
+    borderWidth: 1,
+    borderColor: '#E8ECF4',
+    borderRadius: 8,
+    backgroundColor: '#F7F8F9',
+    padding: 18,
+  },
+});
 
 export default DateInput;
