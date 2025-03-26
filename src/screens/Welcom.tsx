@@ -18,10 +18,10 @@ const TermsScreen = () => {
           Il va falloir que tu acceptes !
         </Text>
         <Text style={styles.textMedium}>
-          Grâce aux informations récoltées, tu vas pouvoir avoir ton calendrier personnalisé !
+          Grâce aux informations récoltées, tu vas pouvoir avoir ton calendrier personnalisé
         </Text>
         <Text style={styles.textMedium}>
-          Il faudra aussi que tu te connectes à Google pour que cela s'ajoute automatiquement !
+          Il faudra aussi que tu te connectes à Google pour que cela s'ajoute automatiquement
         </Text>
       </View>
 
