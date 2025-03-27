@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native'; import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import BaseScreen from './BaseScreen';
 import Button from '../components/Button';
 import Checkbox from '../components/Checkbox';
 
-const TermsScreen = () => {
+type RootStackParamList = {
+  SignUp: undefined;
+  Welcome: undefined;
+  Intro: undefined;
+};
+
+type WelcomeProps = NativeStackScreenProps<RootStackParamList, 'Welcome'>;
+
+const Welcome = ({ navigation }: WelcomeProps) => {
   const [accepted, setAccepted] = useState(false);
 
   return (
@@ -18,10 +26,10 @@ const TermsScreen = () => {
           Il va falloir que tu acceptes !
         </Text>
         <Text style={styles.textMedium}>
-          Grâce aux informations récoltées, tu vas pouvoir avoir ton calendrier personnalisé
+          Grâces au information récolter tu vas pouvoir avoir ton calendrier personnalisé !
         </Text>
         <Text style={styles.textMedium}>
-          Il faudra aussi que tu te connectes à Google pour que cela s'ajoute automatiquement
+          Il faudra aussi que tu te connecte à google pour que cela s'ajouter automatiquement !
         </Text>
       </View>
 
@@ -32,7 +40,7 @@ const TermsScreen = () => {
 
       <Button
         style={styles.button}
-        onPress={() => {}}
+        onPress={() => navigation.navigate('Intro')}
         disabled={!accepted}
       >
         Valider
@@ -45,28 +53,28 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: 'bold',
-    textAlign: 'left', // Alignement du texte à gauche
+    textAlign: 'left',
     marginBottom: 20,
   },
   textContainer: {
     gap: 15,
     marginBottom: 30,
-    alignItems: 'flex-start', // Aligne les textes à gauche
+    alignItems: 'flex-start',
   },
   textLarge: {
     fontSize: 25,
-    textAlign: 'left', // Aligner le texte à gauche
+    textAlign: 'left',
     fontWeight: 'bold',
   },
   textMedium: {
     fontSize: 20,
-    textAlign: 'left', // Aligner le texte à gauche
+    textAlign: 'left',
   },
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
-    alignSelf: 'flex-start', // Aligne la case à cocher à gauche
+    alignSelf: 'flex-start',
   },
   checkboxText: {
     fontSize: 15,
@@ -74,8 +82,8 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   button: {
-    alignSelf: 'center', // Centre le bouton
+    alignSelf: 'center',
   },
 });
 
-export default TermsScreen;
+export default Welcome;
