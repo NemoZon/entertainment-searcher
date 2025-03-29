@@ -1,18 +1,36 @@
 import express, { Express } from 'express';
 import cors, { CorsOptions } from 'cors';
-import { HelloRouter } from '@routers/hello.router';
+import userRouter from '@routers/user.router';
+import categoryRouter from '@routers/category.router';
+import eventRouter from './routers/event.router';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger';
+import rateLimit from 'express-rate-limit';
 
 const app: Express = express();
 
 const corsOptions: CorsOptions = {
   origin: process.env.CLIENT_URL,
-  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  optionsSuccessStatus: 200,
 };
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // 100 requêtes max par IP
+});
+
+// Configuration API
 app.use(express.json());
 app.use(cors(corsOptions));
+app.use('/api', limiter);
 
-app.use('/api', HelloRouter)
 
+// Autres
+app.use('/api/users', userRouter);
+app.use('/api/categories', categoryRouter);
+app.use('/api/events', eventRouter);
+
+// Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 export default app;
