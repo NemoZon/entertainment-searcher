@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  client:
+    build:
+      context: .
+      dockerfile: docker/client/Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - server
+    environment:
+      - NODE_ENV=development
+
+  server:
+    build:
+      context: .
+      dockerfile: docker/server/Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    depends_on:
+      - db
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:admin@db:5432/fyd_app
+      - CLIENT_URL=http://localhost:5173
+      - PORT=3000
+      - AWS_API_URL=${AWS_API_URL}
+      - AWS_API_TOKEN=${AWS_API_TOKEN}
+      - AUTH0_DOMAIN=${AUTH0_DOMAIN}
+      - AUTH0_AUDIENCE=${AUTH0_AUDIENCE}
+      - TICKETMASTER_API_KEY=${TICKETMASTER_API_KEY}
+
+  db:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=fyd_app
+
+volumes:
+  postgres_data:

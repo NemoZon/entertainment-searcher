@@ -1,43 +1,45 @@
 # PROJET ANNUEL
 
-Auteurs : Gleb Bushukin, 
+Auteurs : Gleb Bushukin, Typhaine Lefèvre, Angelo Samina, Karim Boussaid
 
-## Exécuter un projet localement
+## Exécuter le projet
 
-*Dans le dossier du projet, exécutez les commandes suivantes :*
+Le projet peut être lancé à l'aide de Docker pour simplifier la configuration de l'environnement.
 
-Allez dans le dossier « code-reviewer/client »
+### Prérequis pour Docker
+
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+### Démarrer l'environnement Docker
+
+1. Clonez le projet et accédez au répertoire:
 
 ```bash
-cd ./client
+git clone https://github.com/NemoZon/entertainment-searcher
+```
+2. Lancez les conteneurs Docker à partir de la racine:
+```bash
+docker-compose up -d
+```
+Cette commande va démarrer tous les services définis dans le docker-compose.yml:
+
+Service client (React Native)
+Service serveur (Express.js/Prisma)
+Base de données PostgreSQL
+
+3. Accédez à l'application:
+```bash
+Client: http://localhost:5173
+```
+```bash
+API: http://localhost:3000
+```
+```bash
+Documentation API: http://localhost:3000/api-docs
 ```
 
-Téléchargez les dépendances npm pour le côté client
-
+Pour arrêter l'envrionnement docker : 
 ```bash
-npm install
-```
-
-Lancer le client
-
-```bash
-npm run dev
-```
-
-Ouvrez un autre terminal et allez dans le dossier 'code-reviewer/server'
-
-```bash
-cd ./server
-```
-
-Télécharger les dépendances côté serveur npm
-
-```bash
-npm install
-```
-
-Démarrer le serveur
-
-```bash
-npm run dev
+docker-compose down
 ```
