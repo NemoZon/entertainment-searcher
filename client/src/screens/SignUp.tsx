@@ -5,13 +5,26 @@ import Input from '../components/Input';
 import Title from '../components/Title';
 import Button from '../components/Button';
 import DateInput from '../components/DateInput';
+import {registration} from '../features/userActions';
+import {useAppDispatch, useAppSelector} from '../hooks.ts/reducer';
+import {Text} from '@react-navigation/elements';
 
 const SignUp = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [passwordRepeat, setPasswordRepeat] = useState('');
+  // const [passwordRepeat, setPasswordRepeat] = useState('');
   const [date, setDate] = useState<Date>();
+
+  const {error} = useAppSelector(state => state.user);
+
+  const dispatch = useAppDispatch();
+
+  const handleSignUp = () => {
+    if (email && password && name) {
+      dispatch(registration({email, password, name}));
+    }
+  };
 
   return (
     <BaseScreen>
@@ -35,24 +48,20 @@ const SignUp = () => {
           value={password}
           onChangeText={setPassword}
         />
-        <Input
+        {/* <Input
           placeholder="Confirmation mot de passe"
           value={passwordRepeat}
           onChangeText={setPasswordRepeat}
-        />
-        <Input
-          placeholder="Date de naissance"
-          value={passwordRepeat}
-          onChangeText={setPasswordRepeat}
-        />
+        /> */}
         <DateInput
           placeholder="Date de naissance"
           dateState={[date, setDate]}
         />
       </View>
-      <Button style={styles.button} onPress={() => {}}>
+      <Button style={styles.button} onPress={handleSignUp}>
         Inscription
       </Button>
+      <Text style={styles.error}>{error}</Text>
     </BaseScreen>
   );
 };
@@ -77,6 +86,10 @@ const styles = StyleSheet.create({
   },
   inputs: {
     gap: 15,
+  },
+  error: {
+    color: 'red',
+    textAlign: 'center',
   },
 });
 

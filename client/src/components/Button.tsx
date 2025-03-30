@@ -7,10 +7,12 @@ type ButtonProps = {
   children: string;
   type?: 'primary' | 'secondary';
   style?: object;
+  disabled?: boolean;
 };
 
 const Button = ({
   onPress,
+  disabled = false,
   children,
   type = 'primary',
   style = {},
@@ -27,6 +29,7 @@ const Button = ({
   };
   return (
     <TouchableOpacity
+      disabled={disabled}
       onPress={onPress}
       style={[styles.button, dynamicStyles.button, style]}>
       <Text style={[styles.text, dynamicStyles.text]}>{children}</Text>

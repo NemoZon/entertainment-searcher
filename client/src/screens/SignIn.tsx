@@ -4,10 +4,20 @@ import Title from '../components/Title';
 import Input from '../components/Input';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Button from '../components/Button';
+import {useAppDispatch, useAppSelector} from '../hooks.ts/reducer';
+import {login} from '../features/userActions';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const {loading, error} = useAppSelector(state => state.user);
+
+  const dispatch = useAppDispatch();
+
+  const handleSignIn = () => {
+    dispatch(login({email, password}));
+  };
 
   return (
     <BaseScreen>
@@ -32,9 +42,10 @@ const SignIn = () => {
             </Text>
           </TouchableOpacity>
         </View>
-        <Button style={styles.button} onPress={() => {}}>
+        <Button disabled={loading} style={styles.button} onPress={handleSignIn}>
           Connexion
         </Button>
+        <Text style={styles.error}>{error}</Text>
       </View>
     </BaseScreen>
   );
@@ -59,6 +70,10 @@ const styles = StyleSheet.create({
   },
   inputs: {
     gap: 15,
+  },
+  error: {
+    color: 'red',
+    textAlign: 'center',
   },
 });
 
