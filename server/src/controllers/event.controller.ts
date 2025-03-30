@@ -10,10 +10,12 @@ export const fetchEvents = async (req: Request, res: Response) => {
       const price = event.priceRanges?.[0];
       const domain = event.domain?.[0];
 
+      const categoryName = domain?.genre?.name || domain?.segment?.name || 'Autre';
+      
       return {
         ticketmaster_id: event.id,
         name: event.name,
-        category: domain?.genre?.name || domain?.segment?.name || 'Autre',
+        category: categoryName,
         date: new Date(event.date),
         location: `${place?.address?.line1 || ''}, ${place?.postalCode || ''} ${place?.city?.name || ''}, ${place?.country?.name || ''}`.trim(),
         price_min: price?.min || null,
@@ -29,4 +31,50 @@ export const fetchEvents = async (req: Request, res: Response) => {
     console.error('Erreur lors de la récupération des événements :', error);
     res.status(500).json({ message: 'Erreur lors de la récupération des événements' });
   }
+};
+
+export const getAllEvents = async (req: Request, res: Response) => {
+  const { category, location } = req.query;
+  
+  const where: any = {};
+  
+  if (category) {
+    where.category = {
+      name: {
+        equals: category as string,
+        mode: 'insensitive'
+      }
+    };
+  }
+  
+  if (location) {
+    where.location = {
+      contains: location as string,
+      mode: 'insensitive'
+    };
+  }
+  
+  const events = await eventService.getAllEvents(where);
+  res.json(events);
+};
+
+export const getEventById = async (req: Request, res: Response) => {
+  const event = await eventService.getEventById(req.params.id);
+  if (event) res.json(event);
+  else res.status(404).json({ message: 'Event not found' });
+};
+
+export const createEvent = async (req: Request, res: Response) => {
+  const event = await eventService.createEvent(req.body);
+  res.status(201).json(event);
+};
+
+export const updateEvent = async (req: Request, res: Response) => {
+  const updated = await eventService.updateEvent(req.params.id, req.body);
+  res.json(updated);
+};
+
+export const deleteEvent = async (req: Request, res: Response) => {
+  await eventService.deleteEvent(req.params.id);
+  res.status(204).end();
 };
