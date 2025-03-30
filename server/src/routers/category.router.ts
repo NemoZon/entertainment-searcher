@@ -94,24 +94,24 @@ router.get('/:id', categoryController.getCategoryById);
 //  */
 // router.put('/:id', categoryController.updateCategory);
 
-/**
- * @openapi
- * /categories/{id}:
- *   delete:
- *     summary: Supprime une catégorie
- *     tags:
- *       - Categories
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID de la catégorie
- *     responses:
- *       204:
- *         description: Catégorie supprimée
- */
-router.delete('/:id', categoryController.deleteCategory);
+// /**
+//  * @openapi
+//  * /categories/{id}:
+//  *   delete:
+//  *     summary: Supprime une catégorie
+//  *     tags:
+//  *       - Categories
+//  *     parameters:
+//  *       - in: path
+//  *         name: id
+//  *         required: true
+//  *         schema:
+//  *           type: string
+//  *         description: ID de la catégorie
+//  *     responses:
+//  *       204:
+//  *         description: Catégorie supprimée
+//  */
+// router.delete('/:id', categoryController.deleteCategory);
 
 export default router;

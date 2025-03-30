@@ -1,20 +1,6 @@
 version: '3.8'
 
 services:
-  client:
-    build:
-      context: .
-      dockerfile: docker/client/Dockerfile
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./client:/app
-      - /app/node_modules
-    depends_on:
-      - server
-    environment:
-      - NODE_ENV=development
-
   server:
     build:
       context: .

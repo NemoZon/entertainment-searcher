@@ -3,6 +3,9 @@ import cors, { CorsOptions } from 'cors';
 import userRouter from '@routers/user.router';
 import categoryRouter from '@routers/category.router';
 import eventRouter from './routers/event.router';
+import locationRouter from './routers/location.router';
+import preferenceRouter from './routers/preference.router';
+import favoriteRouter from './routers/favorite.router';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 import rateLimit from 'express-rate-limit';
@@ -24,11 +27,14 @@ app.use(express.json());
 app.use(cors(corsOptions));
 app.use('/api', limiter);
 
-
 // Autres
 app.use('/api/users', userRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/events', eventRouter);
+app.use('/api/locations', locationRouter );
+app.use('/api/preferences', preferenceRouter );
+app.use('/api/favorites', favoriteRouter );
+
 
 // Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
