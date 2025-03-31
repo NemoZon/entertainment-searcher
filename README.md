@@ -20,7 +20,13 @@ git clone https://github.com/NemoZon/entertainment-searcher
 ```
 2. Lancez les conteneurs Docker à partir de la racine:
 ```bash
-docker-compose up -d
+cd /server
+```
+```bash
+npm install
+```
+```bash
+docker-compose up --build
 ```
 Cette commande va démarrer tous les services définis dans le docker-compose.yml:
 

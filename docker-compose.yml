@@ -7,9 +7,13 @@ services:
       dockerfile: docker/server/Dockerfile
     ports:
       - "3000:3000"
-    volumes:
-      - ./server:/app
-      - /app/node_modules
+    develop:
+      watch:
+        - action: sync
+          path: ./server
+          target: /app
+        - action: rebuild
+          path: ./server/package.json
     depends_on:
       - db
     environment:

@@ -35,7 +35,6 @@ app.use('/api/locations', locationRouter );
 app.use('/api/preferences', preferenceRouter );
 app.use('/api/favorites', favoriteRouter );
 
-
 // Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
