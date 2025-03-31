@@ -8,7 +8,7 @@ Le projet peut être lancé à l'aide de Docker pour simplifier la configuration
 
 ### Prérequis pour Docker
 
-- [Docker](https://www.docker.com/get-started)
+- [Docker desktop](https://www.docker.com/get-started)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
 ### Démarrer l'environnement Docker
@@ -30,14 +30,11 @@ docker-compose up --build
 ```
 Cette commande va démarrer tous les services définis dans le docker-compose.yml:
 
-Service client (React Native)
 Service serveur (Express.js/Prisma)
 Base de données PostgreSQL
 
 3. Accédez à l'application:
-```bash
-Client: http://localhost:5173
-```
+
 ```bash
 API: http://localhost:3000
 ```

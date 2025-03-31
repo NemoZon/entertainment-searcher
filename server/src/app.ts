@@ -30,6 +30,7 @@ app.use('/api', limiter);
 // Autres
 app.use('/api/users', userRouter);
 app.use('/api/categories', categoryRouter);
+
 app.use('/api/events', eventRouter);
 app.use('/api/locations', locationRouter );
 app.use('/api/preferences', preferenceRouter );

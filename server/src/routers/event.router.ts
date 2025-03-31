@@ -18,8 +18,8 @@ const router = express.Router();
  *             type: object
  *             description: Paramètres de filtrage à transmettre à l'API AWS
  *             example:
- *               city: Paris
- *               category: Musique
+ *               ville: Reims
+ *               interet: ["..."]
  *     responses:
  *       200:
  *         description: Liste des événements récupérés

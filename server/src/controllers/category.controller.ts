@@ -12,15 +12,15 @@ export const getCategoryById = async (req: Request, res: Response) => {
   else res.status(404).json({ message: 'Catégorie non trouvée' });
 };
 
-// export const createCategory = async (req: Request, res: Response) => {
-//   const newCategory = await categoryService.createCategory(req.body);
-//   res.status(201).json(newCategory);
-// };
+export const createCategory = async (req: Request, res: Response) => {
+  const newCategory = await categoryService.createCategory(req.body);
+  res.status(201).json(newCategory);
+};
 
-// export const updateCategory = async (req: Request, res: Response) => {
-//   const updated = await categoryService.updateCategory(req.params.id, req.body);
-//   res.json(updated);
-// };
+export const updateCategory = async (req: Request, res: Response) => {
+  const updated = await categoryService.updateCategory(req.params.id, req.body);
+  res.json(updated);
+};
 
 export const deleteCategory = async (req: Request, res: Response) => {
   await categoryService.deleteCategory(req.params.id);

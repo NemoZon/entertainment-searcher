@@ -1,21 +1,38 @@
 import { Request, Response } from 'express';
+import { PrismaClient } from '@prisma/client';
+import { writeLog } from '@services/logger';
+
+
 import * as eventService from '../services/event.service';
+import { Category } from 'src/@types/category';
+
+const prisma = new PrismaClient();
 
 export const fetchEvents = async (req: Request, res: Response) => {
   try {
-    const rawEvents = await eventService.fetchExternalEvents(req.body);
+    const { ville, interet }: { ville: string; interet: string[] } = req.body;
+    writeLog(`Requête fetchEvents avec ville="${ville}" et interets="${interet.join(', ')}"`);
+
+    const selectedCategories = await prisma.category.findMany({
+      where: {
+        id: { in: interet }
+      }
+    });
+
+    const categoryNames = selectedCategories.map((cat : Category) => cat.name);
+
+    const rawEvents = await eventService.fetchExternalEvents({
+      ville,
+      interet: categoryNames
+    });
 
     const formattedEvents = rawEvents.map((event: any) => {
       const place = event.place?.[0];
       const price = event.priceRanges?.[0];
-      const domain = event.domain?.[0];
 
-      const categoryName = domain?.genre?.name || domain?.segment?.name || 'Autre';
-      
       return {
         ticketmaster_id: event.id,
         name: event.name,
-        category: categoryName,
         date: new Date(event.date),
         location: `${place?.address?.line1 || ''}, ${place?.postalCode || ''} ${place?.city?.name || ''}, ${place?.country?.name || ''}`.trim(),
         price_min: price?.min || null,
@@ -28,6 +45,7 @@ export const fetchEvents = async (req: Request, res: Response) => {
 
     res.json(formattedEvents);
   } catch (error) {
+    writeLog(`Erreur dans fetchEvents : ${error}`);
     console.error('Erreur lors de la récupération des événements :', error);
     res.status(500).json({ message: 'Erreur lors de la récupération des événements' });
   }
