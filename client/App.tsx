@@ -18,6 +18,7 @@ import DisplayOne from './src/screens/DisplayOne';
 import DisplayTwo from './src/screens/DisplayTwo';
 import DisplayThree from './src/screens/DisplayThree';
 import Main from './src/screens/Main';
+import Personal from './src/screens/Personal';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -30,6 +31,7 @@ export type RootStackParamList = {
   DisplayThree: undefined;
   Main: undefined;
   Home: undefined;
+  Personal: undefined;
 };
 
 export type PageProps = NativeStackScreenProps<RootStackParamList, any>;
@@ -60,14 +62,6 @@ function RootStack() {
       />
       <Stack.Screen name="SignIn" component={SignIn} options={{title: ''}} />
       <Stack.Screen name="SignUp" component={SignUp} options={{title: ''}} />
-      <Stack.Screen name="Home" component={Home} options={{title: ''}} />
-      <Stack.Screen
-        name="Login"
-        component={Login}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen name="SignIn" component={SignIn} options={{title: ''}} />
-      <Stack.Screen name="SignUp" component={SignUp} options={{title: ''}} />
       <Stack.Screen name="Welcome" component={Welcome} options={{title: ''}} />
       <Stack.Screen name="Intro" component={Intro} options={{title: ''}} />
       <Stack.Screen
@@ -86,6 +80,8 @@ function RootStack() {
         options={{title: ''}}
       />
       <Stack.Screen name="Main" component={Main} options={{title: ''}} />
+      <Stack.Screen name="Home" component={Home} options={{title: ''}} />
+      <Stack.Screen name="Personal" component={Personal} options={{title: ''}} />
     </Stack.Navigator>
   );
 }

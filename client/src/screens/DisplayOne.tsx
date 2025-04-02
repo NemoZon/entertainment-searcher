@@ -1,15 +1,20 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import BaseScreen from './BaseScreen';
 import Button from '../components/Button';
-import {PageProps} from '../../App';
+import { useAppSelector } from '../hooks.ts/reducer';
+import { PageProps } from '../../App';
 
 const interests = ['Concerts', 'Théâtre', 'Sports', 'Ateliers', 'Dance'];
 
-const DisplayOne = ({navigation}: PageProps) => {
+const DisplayOne = ({ navigation }: PageProps) => {
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
 
-  // Fonction pour gérer la sélection/désélection
+  // Vérification de l'état de connexion de l'utilisateur
+  const user = useAppSelector(state => state.user);
+  const isUserLoggedIn = user.name !== ''; // L'utilisateur est connecté si son nom n'est pas vide
+
+  // Fonction pour gérer la sélection/désélection des centres d'intérêts
   const toggleSelection = (interest: string) => {
     setSelectedInterests(
       prevSelected =>
@@ -21,39 +26,44 @@ const DisplayOne = ({navigation}: PageProps) => {
 
   return (
     <BaseScreen>
-      <View style={styles.container}>
-        <Text style={styles.title}>Nous avons besoin de te connaître !</Text>
-        <Text style={styles.text}>Sélectionne tes centres d'intérêts</Text>
+      {/* Texte dynamique basé sur la connexion de l'utilisateur */}
+      <Text style={styles.title}>
+        {isUserLoggedIn ? 'Choisi tes centres d\'intérêt !' : 'Nous avons besoin de te connaître !'}
+      </Text>
+      <Text style={styles.text}>
+        {isUserLoggedIn
+          ? 'Sélectionne tes centres d\'intérêts pour personnaliser ton expérience.'
+          : 'Sélectionne tes centres d\'intérêts pour commencer.'}
+      </Text>
 
-        {/* Section des boutons */}
-        <View style={styles.grid}>
-          {interests.map((interest, index) => (
-            <TouchableOpacity
-              key={index}
+      {/* Section des boutons */}
+      <View style={styles.grid}>
+        {interests.map((interest, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[
+              styles.button,
+              selectedInterests.includes(interest) && styles.selectedButton,
+            ]}
+            onPress={() => toggleSelection(interest)}>
+            <Text
               style={[
-                styles.button,
-                selectedInterests.includes(interest) && styles.selectedButton,
-              ]}
-              onPress={() => toggleSelection(interest)}>
-              <Text
-                style={[
-                  styles.buttonText,
-                  selectedInterests.includes(interest) &&
-                    styles.selectedButtonText,
-                ]}>
-                {interest}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <Button
-          onPress={() => navigation.navigate('DisplayTwo')}
-          disabled={selectedInterests.length === 0} // Désactivé si aucun choix
-          type="primary">
-          Valider
-        </Button>
+                styles.buttonText,
+                selectedInterests.includes(interest) && styles.selectedButtonText,
+              ]}>
+              {interest}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
+
+      {/* Bouton pour valider la sélection */}
+      <Button
+        onPress={() => navigation.navigate('DisplayTwo')}
+        disabled={selectedInterests.length === 0} // Désactivé si aucun centre d'intérêt n'est sélectionné
+        type="primary">
+        Valider
+      </Button>
     </BaseScreen>
   );
 };
@@ -66,12 +76,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: 'bold',
-    textAlign: 'center',
+    textAlign: 'left',
     marginBottom: 10,
   },
   text: {
     fontSize: 20,
-    textAlign: 'center',
+    textAlign: 'left',
     marginBottom: 20,
   },
   grid: {
