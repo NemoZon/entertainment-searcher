@@ -6,9 +6,9 @@ import {
 } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { store } from './src/app/store';
-import { useAppSelector } from './src/hooks.ts/reducer';
 
 import Login from './src/screens/Login';
 import SignIn from './src/screens/SignIn';
@@ -42,6 +42,8 @@ const Stack = createNativeStackNavigator();
 
 const posthog = new PostHog('phc_dkOtPy9QvVYDGG6YKp7Tc7XpFR8M4wiWq2i5MHYFxQU', {
   host: 'https://us.i.posthog.com',
+  storage: AsyncStorage,
+  persistence: 'file',
 });
 
 function RootStack() {
