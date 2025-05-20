@@ -1,22 +1,39 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { usePostHog } from 'posthog-react-native';
+
 import BaseScreen from './BaseScreen';
 import Title from '../components/Title';
 import Input from '../components/Input';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Button from '../components/Button';
-import {useAppDispatch, useAppSelector} from '../hooks.ts/reducer';
-import {login} from '../features/userActions';
+import { RootStackParamList } from '../../App';
+import { users } from '../mocks/users';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const {loading, error} = useAppSelector(state => state.user);
-
-  const dispatch = useAppDispatch();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const posthog = usePostHog();
 
   const handleSignIn = () => {
-    dispatch(login({email, password}));
+    const user = users.find(u => u.email === email.trim());
+
+    if (user && user.password === password) {
+      posthog?.identify(user.id, { email: user.email });
+      posthog?.capture('user_logged_in', { email: user.email });
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }],
+      });
+    } else {
+      setError('Identifiants incorrects 😬');
+      posthog?.capture('login_failed', { email_attempted: email });
+    }
   };
 
   return (
@@ -42,7 +59,7 @@ const SignIn = () => {
             </Text>
           </TouchableOpacity>
         </View>
-        <Button disabled={loading} style={styles.button} onPress={handleSignIn}>
+        <Button style={styles.button} onPress={handleSignIn}>
           Connexion
         </Button>
         <Text style={styles.error}>{error}</Text>
@@ -55,7 +72,9 @@ const styles = StyleSheet.create({
   forgotPassword: {
     alignSelf: 'flex-end',
   },
-  button: {alignSelf: 'center'},
+  button: {
+    alignSelf: 'center',
+  },
   forgotPassword__text: {
     fontSize: 14,
     color: '#6A707C',

@@ -5,6 +5,9 @@ import BaseScreen from './BaseScreen';
 import Button from '../components/Button';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { useEffect } from 'react';
+import { usePostHog } from 'posthog-react-native';
+
 
 // Mock des événements (remplacé plus tard par API)
 const mockEvents = [
@@ -28,6 +31,7 @@ const mockEvents = [
   },
 ];
 
+
 const Home = () => {
   const navigation = useNavigation();
   const user = useAppSelector(state => state.user);
@@ -39,6 +43,13 @@ const Home = () => {
       prev.includes(eventId) ? prev.filter(id => id !== eventId) : [...prev, eventId]
     );
   };
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    if (posthog) {
+      posthog.capture('sign_in_screen_viewed');
+    }
+  }, [posthog]);
 
   return (
     <BaseScreen>
