@@ -8,8 +8,11 @@ import DateInput from '../components/DateInput';
 import {registration} from '../features/userActions';
 import {useAppDispatch, useAppSelector} from '../hooks.ts/reducer';
 import {Text} from '@react-navigation/elements';
+import { useNavigation } from '@react-navigation/native';
+
 
 const SignUp = () => {
+  const navigation = useNavigation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -58,7 +61,7 @@ const SignUp = () => {
           dateState={[date, setDate]}
         />
       </View>
-      <Button style={styles.button} onPress={handleSignUp}>
+      <Button style={styles.button} onPress={() => navigation.navigate('Welcome')}>
         Inscription
       </Button>
       <Text style={styles.error}>{error}</Text>

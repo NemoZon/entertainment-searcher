@@ -80,9 +80,11 @@ const Home = () => {
       </ScrollView>
 
       {/* Bouton pour revenir à DisplayOne */}
-      <Button onPress={() => navigation.navigate('DisplayOne')}>
-          retour DOne pour l'instant
+      {selectedEvents.length > 0 && (
+        <Button onPress={() => navigation.navigate('DisplayOne')}>
+          Modifier évènement
         </Button>
+      )}
     </BaseScreen>
   );
 };
