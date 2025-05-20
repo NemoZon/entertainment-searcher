@@ -46,3 +46,25 @@ Pour arrêter l'envrionnement docker :
 ```bash
 docker-compose down
 ```
+### Pour lancer seulement le client 
+
+cd client 
+
+git pull -> permettra d'être raccord avec tout le monde
+
+npm i 
+
+"npx react-native run-android"
+
+
+### Pour posthog ios 
+
+1. Compiler sur iOS 
+
+exécuter pod install
+
+builder avec Xcode
+
+tester sur simulateur iOS
+
+(à vérifier)
