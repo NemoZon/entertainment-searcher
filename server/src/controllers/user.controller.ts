@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import * as userService from '../services/user.service';
 import { Auth0UserPayload } from '../@types/auth0';
 
@@ -47,3 +47,21 @@ export const syncUser = async (req: AuthRequest, res: Response) => {
 
   res.status(200).json(user);
 };
+
+export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, password } = req.body;
+    console.log('Registering user:', email, password);
+    
+    const userData = await userService.registration(email, password);
+
+    res.cookie('refreshToken', userData.refreshToken, {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: false // ONLY FOR HTTPS SERVERS
+    });
+    res.status(200).json(userData);
+  } catch (error) {
+    next(error);
+  }
+}

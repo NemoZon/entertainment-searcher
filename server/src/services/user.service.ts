@@ -1,4 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, User } from '@prisma/client';
+import ApiError from '@utils/ApiError';
+import bcrypt from 'bcrypt';
+import tokenService from './token.service';
 
 const prisma = new PrismaClient();
 
@@ -45,3 +48,25 @@ export const upsertUser = (data: {
     },
   });
 };
+
+export const registration = async (
+  email: string,
+  password: string
+): Promise<{ accessToken: string; refreshToken: string; user: User }> => {
+  const candidate = await prisma.user.findFirst({where: { email }});
+  if (candidate) {
+    throw ApiError.BadRequest('User with the same email already exists');
+  }
+  const hashPassword = await bcrypt.hash(password, 3);
+  const user = await createUser({
+    email,
+    password: hashPassword,
+  });
+
+  const tokens = tokenService.generateTokens({ ...user });
+
+  return {
+    ...tokens,
+    user
+  };
+}

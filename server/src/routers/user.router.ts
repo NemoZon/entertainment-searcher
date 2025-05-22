@@ -137,4 +137,6 @@ router.delete('/:id', userController.deleteUser);
  */
 router.post('/sync', checkJwt, userController.syncUser);
 
+router.post('/registration', userController.registerUser);
+
 export default router;
