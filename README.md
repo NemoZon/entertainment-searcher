@@ -1,3 +1,16 @@
+# Pour analytics : 
+    -   App.tsx : ajout de posthog dans l'application
+    -   Home.tsx : Ajoute capture view pour voir l'activité sur la page    
+        Activité sur le bouton modifier event
+    -   SignIn.tsx : Voir les connexions
+
+Pour les test unitaires voir autre git -> FYD (fichier testunitaires)
+Pour Sentry voir également sur autre git -> FYD 
+
+Au besoin pour PostHog on à encore un autre site si trop peu d'informations
+
+
+
 # PROJET ANNUEL
 
 Auteurs : Gleb Bushukin, Typhaine Lefèvre, Angelo Samina, Karim Boussaid
@@ -46,25 +59,3 @@ Pour arrêter l'envrionnement docker :
 ```bash
 docker-compose down
 ```
-### Pour lancer seulement le client 
-
-cd client 
-
-git pull -> permettra d'être raccord avec tout le monde
-
-npm i 
-
-"npx react-native run-android"
-
-
-### Pour posthog ios 
-
-1. Compiler sur iOS 
-
-exécuter pod install
-
-builder avec Xcode
-
-tester sur simulateur iOS
-
-(à vérifier)
