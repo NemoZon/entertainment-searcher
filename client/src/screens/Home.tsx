@@ -88,7 +88,15 @@ const Home = () => {
       </ScrollView>
 
       {selectedEvents.length > 0 && (
-        <Button onPress={() => navigation.navigate('DisplayOne')}>
+        <Button
+          onPress={() => {
+            posthog?.capture('modify_events_clicked', {
+              total_selected: selectedEvents.length,
+              selected_ids: selectedEvents,
+            });
+            navigation.navigate('DisplayOne');
+          }}
+        >
           Modifier événements
         </Button>
       )}
