@@ -1,37 +1,51 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import BaseScreen from './BaseScreen';
 import Button from '../components/Button';
-import {PageProps} from '../../App';
+import { PageProps } from '../../App';
+import { useAppDispatch, useAppSelector } from '../hooks.ts/reducer';
+import { fetchMonths, saveMonths } from '../features/monthActions';
 
-const months = [
-  'Janvier',
-  'Février',
-  'Mars',
-  'Avril',
-  'Mai',
-  'Juin',
-  'Juillet',
-  'Août',
-  'Septembre',
-  'Octobre',
-  'Novembre',
-  'Décembre',
-];
-
-const DisplayThree = ({navigation}: PageProps) => {
+const DisplayThree = ({ navigation }: PageProps) => {
   const [selectedMonths, setSelectedMonths] = useState<string[]>([]);
+  const dispatch = useAppDispatch();
+  const userId = useAppSelector(state => state.user.id);
+  const { months, loading } = useAppSelector(state => state.month);
+
+  useEffect(() => {
+    dispatch(fetchMonths());
+  }, [dispatch]);
 
   const toggleMonthSelection = (month: string) => {
     setSelectedMonths(prev =>
-      prev.includes(month) ? prev.filter(m => m !== month) : [...prev, month],
+      prev.includes(month) ? prev.filter(m => m !== month) : [...prev, month]
     );
   };
+
+  const handleValidate = () => {
+    if (!userId || selectedMonths.length === 0) {
+      return;
+    }
+    dispatch(saveMonths({ userId, months: selectedMonths }))
+      .unwrap()
+      .then(() => navigation.navigate('Main'))
+      .catch(() => {
+        // gestion d'erreur optionnelle
+      });
+  };
+
+  if (loading) {
+    return (
+      <BaseScreen>
+        <ActivityIndicator size="large" color="black" />
+      </BaseScreen>
+    );
+  }
 
   return (
     <BaseScreen>
       <View style={styles.container}>
-        <Text style={styles.title}>Pour quel mois veux-tu des évents ?</Text>
+        <Text style={styles.title}>Pour quels mois veux-tu des évents ?</Text>
         <Text style={styles.text}>Dis-nous tout !</Text>
 
         <View style={styles.monthsContainer}>
@@ -42,12 +56,14 @@ const DisplayThree = ({navigation}: PageProps) => {
                 styles.monthButton,
                 selectedMonths.includes(month) && styles.monthButtonSelected,
               ]}
-              onPress={() => toggleMonthSelection(month)}>
+              onPress={() => toggleMonthSelection(month)}
+            >
               <Text
                 style={[
                   styles.monthText,
                   selectedMonths.includes(month) && styles.monthTextSelected,
-                ]}>
+                ]}
+              >
                 {month}
               </Text>
             </TouchableOpacity>
@@ -55,10 +71,11 @@ const DisplayThree = ({navigation}: PageProps) => {
         </View>
 
         <Button
-          onPress={() => navigation.navigate('Main')}
-          disabled={selectedMonths.length === 0} // Désactivé tant qu'aucun mois n'est sélectionné
-          type="primary">
-          C'est noté le S !
+          onPress={handleValidate}
+          disabled={selectedMonths.length === 0}
+          type="primary"
+        >
+          C’est noté le S !
         </Button>
       </View>
     </BaseScreen>
@@ -92,7 +109,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 5,
     margin: 5,
-    fontWeight: 'bold',
+    borderWidth: 1,
+    borderColor: 'black',
   },
   monthButtonSelected: {
     backgroundColor: 'black',

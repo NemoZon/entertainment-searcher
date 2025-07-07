@@ -1,67 +1,91 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import BaseScreen from './BaseScreen';
 import Button from '../components/Button';
-import { useAppSelector } from '../hooks.ts/reducer';
+import { useAppSelector, useAppDispatch } from '../hooks.ts/reducer';
 import { PageProps } from '../../App';
-
-const interests = ['Concerts', 'Théâtre', 'Sports', 'Ateliers', 'Dance'];
+import { getCategories } from '../features/categoryActions';
+import { Category } from '../types/Category';
 
 const DisplayOne = ({ navigation }: PageProps) => {
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const dispatch = useAppDispatch();
 
-  // Vérification de l'état de connexion de l'utilisateur
-  const user = useAppSelector(state => state.user);
-  const isUserLoggedIn = user.name !== ''; // L'utilisateur est connecté si son nom n'est pas vide
+  const userId = useAppSelector(state => state.user.id);
+  const categories = useAppSelector(state => state.category.categories);
+  const loading = useAppSelector(state => state.category.loading);
 
-  // Fonction pour gérer la sélection/désélection des centres d'intérêts
-  const toggleSelection = (interest: string) => {
-    setSelectedInterests(
-      prevSelected =>
-        prevSelected.includes(interest)
-          ? prevSelected.filter(item => item !== interest) // Désélectionne
-          : [...prevSelected, interest], // Ajoute à la sélection
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!userId) {
+      console.warn('❌ Aucun utilisateur détecté dans le store Redux.');
+      Alert.alert('Erreur', 'Utilisateur non connecté. Veuillez vous inscrire ou vous reconnecter.');
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    dispatch(getCategories());
+  }, [dispatch]);
+
+  const toggleSelection = (id: string) => {
+    setSelectedCategories(prev =>
+      prev.includes(id)
+        ? prev.filter(item => item !== id)
+        : [...prev, id]
     );
+    console.log('✅ Catégorie cliquée :', id);
+  };
+
+  const handleValidate = () => {
+    console.log('▶️ Bouton Valider pressé');
+
+    if (!userId || selectedCategories.length === 0) {
+      console.warn("⛔️ Pas d'utilisateur ou pas de sélection");
+      Alert.alert('Erreur', 'Veuillez sélectionner au moins une catégorie.');
+      return;
+    }
+
+    // ⚠️ Tu enverras ces données à ton backend plus tard (ex : via savePreferences)
+    console.log('📤 Catégories sélectionnées (à enregistrer plus tard) :', selectedCategories);
+    navigation.navigate('DisplayTwo');
   };
 
   return (
     <BaseScreen>
-      {/* Texte dynamique basé sur la connexion de l'utilisateur */}
-      <Text style={styles.title}>
-        {isUserLoggedIn ? 'Choisi tes centres d\'intérêt !' : 'Nous avons besoin de te connaître !'}
-      </Text>
-      <Text style={styles.text}>
-        {isUserLoggedIn
-          ? 'Sélectionne tes centres d\'intérêts pour personnaliser ton expérience.'
-          : 'Sélectionne tes centres d\'intérêts pour commencer.'}
-      </Text>
+      <Text style={styles.title}>Choisis tes centres d'intérêt !</Text>
+      <Text style={styles.text}>Sélectionne pour personnaliser ton expérience.</Text>
 
-      {/* Section des boutons */}
-      <View style={styles.grid}>
-        {interests.map((interest, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[
-              styles.button,
-              selectedInterests.includes(interest) && styles.selectedButton,
-            ]}
-            onPress={() => toggleSelection(interest)}>
-            <Text
+      {loading ? (
+        <ActivityIndicator size="large" color="#000" />
+      ) : (
+        <View style={styles.grid}>
+          {categories.map((category: Category) => (
+            <TouchableOpacity
+              key={category.id}
               style={[
-                styles.buttonText,
-                selectedInterests.includes(interest) && styles.selectedButtonText,
-              ]}>
-              {interest}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+                styles.button,
+                selectedCategories.includes(category.id) && styles.selectedButton,
+              ]}
+              onPress={() => toggleSelection(category.id)}
+            >
+              <Text
+                style={[
+                  styles.buttonText,
+                  selectedCategories.includes(category.id) && styles.selectedButtonText,
+                ]}
+              >
+                {category.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
 
-      {/* Bouton pour valider la sélection */}
       <Button
-        onPress={() => navigation.navigate('DisplayTwo')}
-        disabled={selectedInterests.length === 0} // Désactivé si aucun centre d'intérêt n'est sélectionné
-        type="primary">
+        onPress={handleValidate}
+        disabled={selectedCategories.length === 0 || loading}
+        type="primary"
+      >
         Valider
       </Button>
     </BaseScreen>
@@ -69,19 +93,13 @@ const DisplayOne = ({ navigation }: PageProps) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    paddingVertical: 20,
-  },
   title: {
     fontSize: 30,
     fontWeight: 'bold',
-    textAlign: 'left',
     marginBottom: 10,
   },
   text: {
     fontSize: 20,
-    textAlign: 'left',
     marginBottom: 20,
   },
   grid: {
@@ -96,6 +114,7 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     paddingVertical: 20,
     paddingHorizontal: 40,
+    margin: 5,
   },
   buttonText: {
     fontSize: 18,

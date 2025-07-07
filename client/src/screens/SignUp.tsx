@@ -1,31 +1,49 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import BaseScreen from './BaseScreen';
-import {StyleSheet, View} from 'react-native';
+import { StyleSheet, View, Alert } from 'react-native';
 import Input from '../components/Input';
 import Title from '../components/Title';
 import Button from '../components/Button';
 import DateInput from '../components/DateInput';
-import {registration} from '../features/userActions';
-import {useAppDispatch, useAppSelector} from '../hooks.ts/reducer';
-import {Text} from '@react-navigation/elements';
+import { registration } from '../features/userActions';
+import { useAppDispatch, useAppSelector } from '../hooks.ts/reducer';
+import { Text } from '@react-navigation/elements';
 import { useNavigation } from '@react-navigation/native';
-
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../types/navigation';
 
 const SignUp = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  // const [passwordRepeat, setPasswordRepeat] = useState('');
+  const [auth0_id, setAuth0Id] = useState('');
   const [date, setDate] = useState<Date>();
 
-  const {error} = useAppSelector(state => state.user);
-
+  const { error } = useAppSelector(state => state.user);
   const dispatch = useAppDispatch();
 
-  const handleSignUp = () => {
-    if (email && password && name) {
-      dispatch(registration({email, password, name}));
+  const handleSignUp = async () => {
+    if (email && auth0_id && name && date) {
+      try {
+        const result = await dispatch(
+          registration({
+            email,
+            auth0_id,
+            name,
+          })
+        ).unwrap();
+
+        if (result.status === 201) {
+          Alert.alert('Succès', 'Inscription réussie !');
+          navigation.navigate('Welcome');
+        }
+      } catch (err) {
+        Alert.alert('Erreur', 'Une erreur est survenue lors de l’inscription.');
+        console.error('Erreur registration:', err);
+      }
+    } else {
+      Alert.alert('Champs requis', 'Merci de remplir tous les champs.');
     }
   };
 
@@ -47,21 +65,16 @@ const SignUp = () => {
         />
         <Input
           autoComplete="password"
-          placeholder="Mot de passe"
-          value={password}
-          onChangeText={setPassword}
+          placeholder="Identifiant (auth0_id)"
+          value={auth0_id}
+          onChangeText={setAuth0Id}
         />
-        {/* <Input
-          placeholder="Confirmation mot de passe"
-          value={passwordRepeat}
-          onChangeText={setPasswordRepeat}
-        /> */}
         <DateInput
           placeholder="Date de naissance"
           dateState={[date, setDate]}
         />
       </View>
-      <Button style={styles.button} onPress={() => navigation.navigate('Welcome')}>
+      <Button style={styles.button} onPress={handleSignUp}>
         Inscription
       </Button>
       <Text style={styles.error}>{error}</Text>
@@ -70,22 +83,10 @@ const SignUp = () => {
 };
 
 const styles = StyleSheet.create({
-  forgotPassword: {
-    alignSelf: 'flex-end',
-  },
-  button: {alignSelf: 'center', marginTop: 19},
-  forgotPassword__text: {
-    fontSize: 14,
-    color: '#6A707C',
-    fontWeight: 'bold',
-  },
+  button: { alignSelf: 'center', marginTop: 19 },
   title: {
     maxWidth: 280,
     marginBottom: 48,
-  },
-  content: {
-    marginTop: 30,
-    gap: 30,
   },
   inputs: {
     gap: 15,

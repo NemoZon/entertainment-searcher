@@ -1,53 +1,45 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 import { useAppSelector } from '../hooks.ts/reducer';
 import BaseScreen from './BaseScreen';
 import Button from '../components/Button';
-import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { useEffect } from 'react';
 import { usePostHog } from 'posthog-react-native';
+import { Event } from '../types/Event';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../types/navigation';
 
-
-// Mock des événements (remplacé plus tard par API)
-const mockEvents = [
-  {
-    id: 1,
-    month: 'Juillet',
-    name: 'Festival de Musique',
-    date: '15 Juillet 2024 - 20h',
-    price: 'Gratuit',
-    image: 'https://via.placeholder.com/50',
-    link: 'https://example.com',
-  },
-  {
-    id: 2,
-    month: 'Août',
-    name: 'Théâtre en Plein Air',
-    date: '10 Août 2024 - 18h',
-    price: '10€',
-    image: 'https://via.placeholder.com/50',
-    link: 'https://example.com',
-  },
-];
-
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
 const Home = () => {
-  const navigation = useNavigation();
-  const user = useAppSelector(state => state.user);
-  const userName = user.name || 'Utilisateur';
+  const navigation = useNavigation<NavigationProp>();
+  const posthog = usePostHog();
+
+  const user = useAppSelector((state) => state.user);
+  const userName = user.firstName || 'Utilisateur';
+  const events = useAppSelector((state) => state.event.events);
+
   const [selectedEvents, setSelectedEvents] = useState<number[]>([]);
 
   const toggleSelectEvent = (eventId: number) => {
-    setSelectedEvents(prev =>
-      prev.includes(eventId) ? prev.filter(id => id !== eventId) : [...prev, eventId]
+    setSelectedEvents((prev) =>
+      prev.includes(eventId)
+        ? prev.filter((id) => id !== eventId)
+        : [...prev, eventId]
     );
   };
-  const posthog = usePostHog();
 
   useEffect(() => {
     if (posthog) {
-      posthog.capture('sign_in_screen_viewed');
+      posthog.capture('home_screen_viewed');
     }
   }, [posthog]);
 
@@ -63,37 +55,41 @@ const Home = () => {
       <Text style={styles.subtitle}>Voici les événements à venir :</Text>
 
       <ScrollView contentContainerStyle={styles.container}>
-        {mockEvents.map(event => {
-          const isSelected = selectedEvents.includes(event.id);
-          return (
-            <TouchableOpacity
-              key={event.id}
-              style={[styles.eventCard, isSelected && styles.selectedCard]}
-              onPress={() => toggleSelectEvent(event.id)}>
-              <Image source={{ uri: event.image }} style={styles.eventImage} />
-              <View style={styles.eventInfo}>
-                <Text style={[styles.eventName, isSelected && styles.selectedText]}>
-                  {event.name}
+        {events.length === 0 ? (
+          <Text>Aucun événement sélectionné pour le moment.</Text>
+        ) : (
+          events.map((event: Event) => {
+            const isSelected = selectedEvents.includes(event.id);
+            return (
+              <TouchableOpacity
+                key={event.id}
+                style={[styles.eventCard, isSelected && styles.selectedCard]}
+                onPress={() => toggleSelectEvent(event.id)}
+              >
+                <Image source={{ uri: event.image }} style={styles.eventImage} />
+                <View style={styles.eventInfo}>
+                  <Text style={[styles.eventName, isSelected && styles.selectedText]}>
+                    {event.name}
+                  </Text>
+                  <Text style={[styles.eventDate, isSelected && styles.selectedText]}>
+                    {event.date}
+                  </Text>
+                  <Text style={[styles.eventPrice, isSelected && styles.selectedText]}>
+                    {event.price}
+                  </Text>
+                </View>
+                <Text style={[styles.plus, isSelected && styles.minus]}>
+                  {isSelected ? '-' : '+'}
                 </Text>
-                <Text style={[styles.eventDate, isSelected && styles.selectedText]}>
-                  {event.date}
-                </Text>
-                <Text style={[styles.eventPrice, isSelected && styles.selectedText]}>
-                  {event.price}
-                </Text>
-              </View>
-              <Text style={[styles.plus, isSelected && styles.minus]}>
-                {isSelected ? '-' : '+'}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
+              </TouchableOpacity>
+            );
+          })
+        )}
       </ScrollView>
 
-      {/* Bouton pour revenir à DisplayOne */}
       {selectedEvents.length > 0 && (
         <Button onPress={() => navigation.navigate('DisplayOne')}>
-          Modifier évènement
+          Modifier événements
         </Button>
       )}
     </BaseScreen>
@@ -167,22 +163,6 @@ const styles = StyleSheet.create({
   },
   selectedText: {
     color: 'white',
-  },
-  returnButton: {
-    backgroundColor: '#3498db',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    position: 'absolute',
-    bottom: 30,
-    left: '50%',
-    transform: [{ translateX: -90 }],
-  },
-  returnButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
   },
 });
 

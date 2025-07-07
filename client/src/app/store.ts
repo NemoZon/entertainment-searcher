@@ -1,9 +1,20 @@
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer from '../features/userSlice';
+import preferenceReducer from '../features/preferenceSlice';
+import locationReducer from '../features/locationsSlice';
+import monthReducer from '../features/monthSlice';
+import eventReducer from '../features/eventSlice';
+import categoryReducer from '../features/categorySlice';
+
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
+    preference: preferenceReducer,
+    location: locationReducer,
+    month: monthReducer,
+    event: eventReducer,
+    category: categoryReducer,
   },
 });
 

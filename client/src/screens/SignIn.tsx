@@ -4,25 +4,28 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { usePostHog } from 'posthog-react-native';
 
+import { login } from '../features/userActions';
 import BaseScreen from './BaseScreen';
 import Title from '../components/Title';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { RootStackParamList } from '../../App';
-import { users } from '../mocks/users';
+import { useAppDispatch } from '../hooks.ts/reducer';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [auth0_id, setAuth0Id] = useState('');
   const [error, setError] = useState('');
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const posthog = usePostHog();
+  const dispatch = useAppDispatch(); // ✅ utilise bien ton hook typé
 
-  const handleSignIn = () => {
-    const user = users.find(u => u.email === email.trim());
+  const handleSignIn = async () => {
+    try {
+      const result = await dispatch(login({ email: email.trim(), password: auth0_id })).unwrap();
+      const user = result.data;
 
-    if (user && user.password === password) {
       posthog?.identify(user.id, { email: user.email });
       posthog?.capture('user_logged_in', { email: user.email });
 
@@ -30,8 +33,8 @@ const SignIn = () => {
         index: 0,
         routes: [{ name: 'Home' }],
       });
-    } else {
-      setError('Identifiants incorrects 😬');
+    } catch (err: any) {
+      setError(err?.message || 'Identifiants incorrects 😬');
       posthog?.capture('login_failed', { email_attempted: email });
     }
   };
@@ -48,14 +51,13 @@ const SignIn = () => {
             onChangeText={setEmail}
           />
           <Input
-            autoComplete="password"
-            placeholder="Mot de passe"
-            value={password}
-            onChangeText={setPassword}
+            placeholder="Mot de passe (auth0_id)"
+            value={auth0_id}
+            onChangeText={setAuth0Id}
           />
           <TouchableOpacity style={styles.forgotPassword} onPress={() => {}}>
             <Text style={styles.forgotPassword__text}>
-              Bah alors, t’as oublié ton mdp mon reuf ?
+              Bah alors, t’as oublié ton ID mon reuf ?
             </Text>
           </TouchableOpacity>
         </View>

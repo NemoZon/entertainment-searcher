@@ -1,114 +1,106 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import {Picker} from '@react-native-picker/picker';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import BaseScreen from './BaseScreen';
 import Button from '../components/Button';
-import {PageProps} from '../../App';
+import { useAppDispatch, useAppSelector } from '../hooks.ts/reducer';
+import { fetchLocations, saveLocation } from '../features/locationActions';
+import { PageProps } from '../../App';
+import { Location } from '../types/Location';
 
-// Liste des villes françaises
-const cities = [
-  'Paris',
-  'Marseille',
-  'Lyon',
-  'Toulouse',
-  'Nice',
-  'Nantes',
-  'Strasbourg',
-  'Montpellier',
-  'Bordeaux',
-  'Lille',
-  'Rennes',
-  'Reims',
-  'Saint-Étienne',
-  'Le Havre',
-  'Toulon',
-  'Grenoble',
-  'Dijon',
-  'Angers',
-  'Nîmes',
-  'Villeurbanne',
-  'Clermont-Ferrand',
-  'Le Mans',
-  'Aix-en-Provence',
-  'Brest',
-  'Tours',
-  'Amiens',
-  'Limoges',
-  'Annecy',
-  'Perpignan',
-];
+const DisplayTwo = ({ navigation }: PageProps) => {
+  const dispatch = useAppDispatch();
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
 
-const DisplayTwo = ({navigation}: PageProps) => {
-  const [selectedCity, setSelectedCity] = useState<string>('');
+  const locations = useAppSelector(state => state.location.locations); // ✅ propriété au pluriel
+  const userId = useAppSelector(state => state.user.id);
+
+  useEffect(() => {
+    if (!userId) {
+      Alert.alert("Erreur", "Utilisateur non connecté.");
+      return;
+    }
+
+    dispatch(fetchLocations());
+  }, [dispatch, userId]);
+
+  const handleValidate = () => {
+    if (!selectedCity || !userId) {
+      Alert.alert("Erreur", "Merci de choisir une ville.");
+      return;
+    }
+
+    dispatch(saveLocation({ userId, city: selectedCity }))
+      .unwrap()
+      .then(() => {
+        navigation.navigate('DisplayThree');
+      })
+      .catch(() => {
+        Alert.alert("Erreur", "Impossible d'enregistrer votre ville.");
+      });
+  };
 
   return (
     <BaseScreen>
-      <View style={styles.container}>
-        <Text style={styles.title}>
-          Il nous faut encore{'\n'}quelques informations
-        </Text>
-        <Text style={styles.text}>
-          Donne-nous la ville où tu souhaites avoir des événements
-        </Text>
+      <Text style={styles.title}>Choisis ta ville !</Text>
 
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={selectedCity}
-            onValueChange={itemValue => setSelectedCity(itemValue)}
-            style={styles.picker}
-            dropdownIconColor="black">
-            <Picker.Item label="Sélectionne une ville" value="" color="gray" />
-            {cities.map((city, index) => (
-              <Picker.Item
-                key={index}
-                label={city}
-                value={city}
-                color="black"
-              />
-            ))}
-          </Picker>
-        </View>
-
-        {/* Bouton Valider */}
-        <Button
-          onPress={() => navigation.navigate('DisplayThree')}
-          disabled={selectedCity === ''}
-          type="primary">
-          Valider
-        </Button>
+      <View style={styles.grid}>
+        {locations.map((location: Location) => (
+          <TouchableOpacity
+            key={location.id}
+            style={[
+              styles.button,
+              selectedCity === location.city && styles.selectedButton,
+            ]}
+            onPress={() => setSelectedCity(location.city)}
+          >
+            <Text
+              style={[
+                styles.buttonText,
+                selectedCity === location.city && styles.selectedButtonText,
+              ]}
+            >
+              {location.city}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
+
+      <Button onPress={handleValidate} disabled={!selectedCity} type="primary">
+        Valider
+      </Button>
     </BaseScreen>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    paddingVertical: 20,
-  },
   title: {
     fontSize: 30,
     fontWeight: 'bold',
-    textAlign: 'center',
     marginBottom: 10,
   },
-  text: {
-    fontSize: 20,
-    textAlign: 'center',
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 10,
     marginBottom: 20,
   },
-  pickerContainer: {
-    width: '100%',
-    borderWidth: 1,
+  button: {
+    borderWidth: 2,
     borderColor: 'black',
-    borderRadius: 3,
-    backgroundColor: 'white',
-    overflow: 'hidden',
-    marginBottom: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 40,
+    margin: 5,
   },
-  picker: {
-    height: 50,
+  buttonText: {
+    fontSize: 18,
     color: 'black',
+  },
+  selectedButton: {
+    backgroundColor: 'black',
+  },
+  selectedButtonText: {
+    color: 'white',
   },
 });
 

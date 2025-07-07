@@ -22,55 +22,60 @@ const initialState: UserState = {
 export const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {
-    pending: (state) => {
-      state.loading = true;
-      state.status = 0;
-      state.error = '';
-    },
-    fulfilled: (state, action: PayloadAction<ReducerResponse<User>>) => {
-      state.loading = false;
-      state.status = action.payload.status;
-      state.error = '';
-      state.id = action.payload.data.id;
-      state.auth0_id = action.payload.data.auth0_id;
-      state.email = action.payload.data.email;
-      state.preferences = action.payload.data.preferences;
-      state.locations = action.payload.data.locations;
-      state.favorites = action.payload.data.favorites;
-      state.history = action.payload.data.history;
-    },
-    rejected: (state, action) => {
-      state.loading = false;
-      state.status = action.payload.status;
-      state.error = action.payload.message;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-    .addCase(login.pending, (state) => {
-      userSlice.caseReducers.pending(state);
-    })
-    .addCase(login.fulfilled, (state, action) => {
-      userSlice.caseReducers.fulfilled(state, action);
-    })
-    .addCase(login.rejected, (state, action) => {
-      userSlice.caseReducers.rejected(state, action);
-    })
-    .addCase(registration.pending, (state) => {
-      userSlice.caseReducers.pending(state);
-    })
-    .addCase(registration.fulfilled, (state, action) => {
-      userSlice.caseReducers.fulfilled(state, action);
-    })
-    .addCase(registration.rejected, (state, action) => {
-      userSlice.caseReducers.rejected(state, action);
-    });
+      .addCase(login.pending, (state) => {
+        state.loading = true;
+        state.status = 0;
+        state.error = '';
+      })
+      .addCase(login.fulfilled, (state, action: PayloadAction<ReducerResponse<User>>) => {
+        const user = action.payload.data;
+        state.loading = false;
+        state.status = action.payload.status;
+        state.error = '';
+        state.id = user.id;
+        state.auth0_id = user.auth0_id;
+        state.email = user.email;
+        state.preferences = user.preferences;
+        state.locations = user.locations;
+        state.favorites = user.favorites;
+        state.history = user.history;
+      })
+      .addCase(login.rejected, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.status = action.payload?.status || 500;
+        state.error = action.payload?.message || 'Erreur inconnue';
+      })
+
+      // ✅ Ajout du log ici pour debug
+      .addCase(registration.pending, (state) => {
+        state.loading = true;
+        state.status = 0;
+        state.error = '';
+      })
+      .addCase(registration.fulfilled, (state, action: PayloadAction<ReducerResponse<User>>) => {
+        console.log("🧩 registration.fulfilled reçu :", action.payload);
+
+        const user = action.payload.data;
+        state.loading = false;
+        state.status = action.payload.status;
+        state.error = '';
+        state.id = user.id;
+        state.auth0_id = user.auth0_id;
+        state.email = user.email;
+        state.preferences = user.preferences;
+        state.locations = user.locations;
+        state.favorites = user.favorites;
+        state.history = user.history;
+      })
+      .addCase(registration.rejected, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.status = action.payload?.status || 500;
+        state.error = action.payload?.message || 'Erreur inconnue';
+      });
   },
 });
 
-export const { pending, fulfilled, rejected } = userSlice.actions;
-
-const userReducer = userSlice.reducer;
-
-export default userReducer;
+export default userSlice.reducer;

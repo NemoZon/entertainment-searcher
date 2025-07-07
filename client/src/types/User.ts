@@ -2,7 +2,6 @@ export type User = {
   id: string,
   auth0_id: string,
   email: string,
-  password: string,
   lastName?: string,
   firstName?: string,
   created_at?: string,
