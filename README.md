@@ -3,6 +3,7 @@
     -   Home.tsx : Ajoute capture view pour voir l'activité sur la page    
         Activité sur le bouton modifier event
     -   SignIn.tsx : Voir les connexions
+    - Welcom : bouton combien de personne valider les mention légales
 
 Pour les test unitaires voir autre git -> FYD (fichier testunitaires)
 Pour Sentry voir également sur autre git -> FYD 

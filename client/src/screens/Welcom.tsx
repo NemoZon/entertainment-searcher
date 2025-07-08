@@ -4,9 +4,12 @@ import BaseScreen from './BaseScreen';
 import Button from '../components/Button';
 import Checkbox from '../components/Checkbox';
 import {PageProps} from '../../App';
+import { usePostHog } from 'posthog-react-native';
+
 
 const Welcome = ({navigation}: PageProps) => {
   const [accepted, setAccepted] = useState(false);
+  const posthog = usePostHog();
 
   return (
     <BaseScreen>
@@ -35,7 +38,13 @@ const Welcome = ({navigation}: PageProps) => {
 
       <Button
         style={styles.button}
-        onPress={() => navigation.navigate('Intro')}
+        onPress={() => {
+          posthog.capture('welcome_validated', {
+            accepted_terms: accepted,
+            timestamp: new Date().toISOString(),
+          });
+          navigation.navigate('Intro');
+        }}
         disabled={!accepted}>
         Valider
       </Button>
